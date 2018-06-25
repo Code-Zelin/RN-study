@@ -1,17 +1,25 @@
 import { AppRegistry } from 'react-native';
+
 import App from './App';
-import FadeInView from './components/FadeInView';
+import CourseList from './page/courses/courseList';
+import CourseDetail from './page/courses/courseDetail';
+import Courses from './page/courses/courses';
+import api from './util/api';
+
 import {
-    StackNavigator,
     createStackNavigator
 } from 'react-navigation';
+
+api.getStatic();
 
 const Router = createStackNavigator(
     {
         Main: App,
-        Profile: FadeInView,
+        List: CourseList,
+        CourseDetail,
+        Courses
     }, {
-        initialRouteName: 'Main'
+        initialRouteName: 'List'
     }
 );
 AppRegistry.registerComponent('RNStudy', () => Router);
