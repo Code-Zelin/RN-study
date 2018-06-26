@@ -4,9 +4,11 @@ import {
     View,
     Text,
     TouchableWithoutFeedback,
-    ImageBackground
+    ImageBackground,
+    Modal
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import Loading from "../common-components/Modal"
 
 import api from '../../util/api';
 
@@ -27,6 +29,7 @@ export default class courseList extends Component {
                 new: []
             },
             curItem: 0,
+            loading: false,
             TABS: [
                 [
                     {
@@ -91,8 +94,11 @@ export default class courseList extends Component {
     }
 
     componentDidMount() {
+        this.Loading.show("正在加载");
         this.getOnePageData();
     }
+
+
 
     // 获取第一屏数据
     getOnePageData() {
@@ -105,6 +111,7 @@ export default class courseList extends Component {
                 prevState.onePageData.new = res;
                 return prevState;
             })
+            this.Loading.close();
         })
     }
 
@@ -115,6 +122,7 @@ export default class courseList extends Component {
                 prevState.dataList = res.content;
                 return prevState;
             })
+            this.Loading.close();
         })
     }
 
@@ -153,6 +161,7 @@ export default class courseList extends Component {
         this.setState({
             curItem: index,
         })
+        this.Loading.show("正在加载");
         switch (index) {
             case 0:
                 this.getOnePageData();
@@ -166,19 +175,21 @@ export default class courseList extends Component {
         }
     }
 
-    handleClickTag(type, index) {
+    handleClickTag(type, index, element) {
         const that = this;
-        let time = 0
+        let time = 0;
+        this.Loading.show("正在加载");
+
         new Promise((response) => {
             time = new Date().getTime();
             let tabs = this.state.TABS;
             let item = tabs[type][index];
             item.selected = !item.selected;
 
-            // 只修改一个值，应该全部替换效率高一点。。猜测
-            that.setState({
+            // 修改state效率较低
+            /*that.setState({
                 TABS: tabs
-            })
+            })*/
 
             return response(tabs);
         }).then(res => {
@@ -206,10 +217,15 @@ export default class courseList extends Component {
 
     }
 
-
+    onRequestClose() {
+        this.setState({
+            loading: false
+        })
+    }
 
     render() {
         const { navigate } = this.props.navigation;
+
         return (
             <View style={{flex: 1, backgroundColor: '#f1f1f1'}}>
                 <LinearGradient colors={['#6FAEFF', '#8173FF']} style={styles.titleBars}>
@@ -232,116 +248,105 @@ export default class courseList extends Component {
                     }
                 </LinearGradient>
                 {
-                    this.state.curItem === 0 ?
-                        (
-                            <ScrollView style={styles.courseList}>
-                                <View style={{flex: 1, padding: 10}}>
+                    this.state.curItem == 0 ? (
+                        <ScrollView style={styles.courseList}>
+                            <View style={{flex: 1, padding: 10}}>
+                                {
+                                    this.state.onePageData.theme.map((item, index) => (
+                                        <TouchableWithoutFeedback
+                                            id={item.id} key={index}
+                                            onPress={() => navigate('Courses', {type: 'series', id: item.id})}
+                                            style={[styles.courseTheme, index == this.state.onePageData.theme.length - 1 ? {marginBottom: 0} : {}]}
+                                        >
+                                            <ImageBackground source={require('../../img/item.jpg')}
+                                                             style={{flex: 1}}>
+                                                <View style={styles.courseThemeText}>
+                                                    <Text style={styles.courseThemeTextInner}>{item.name}</Text>
+                                                </View>
+                                            </ImageBackground>
+                                        </TouchableWithoutFeedback>
+                                    ))
+                                }
+                            </View>
+                            <View style={styles.courseTitle}>
+                                <Text style={styles.courseTitleText}>新手入门</Text>
+                            </View>
+                            <ScrollView style={styles.courseNewList} horizontal={true}>
+                                {
+                                    this.state.onePageData.new.map((item, index) => (
+                                        <View
+                                            style={[styles.courseNewItem, index == this.state.onePageData.new.length - 1 ? {marginRight: 10} : {}]}
+                                            id={item.id} key={index}>
+                                            <ImageBackground source={require('../../img/item.jpg')}
+                                                             style={styles.courseNewItemBg}/>
+                                        </View>
+                                    ))
+                                }
+                            </ScrollView>
+                        </ScrollView>
+                    ) : (
+                        this.state.curItem == 1 ? (
+                            <View style={{flex:1}}>
+                                <View style={styles.classifyTabsWrapper}>
                                     {
-                                        this.state.onePageData.theme.map((item, index) => (
-                                            <TouchableWithoutFeedback
-                                                id={item.id} key={index}
-                                                onPress={() => navigate('Courses', { type: 'series',id: item.id })}
-                                                style={[styles.courseTheme, index == this.state.onePageData.theme.length - 1 ? {marginBottom: 0} : {}]}
-                                            >
-                                                <ImageBackground source={require('../../img/item.jpg')}
-                                                                 style={{flex: 1}}>
-                                                    <View style={styles.courseThemeText}>
-                                                        <Text style={styles.courseThemeTextInner}>{item.name}</Text>
-                                                    </View>
-                                                </ImageBackground>
-                                            </TouchableWithoutFeedback>
-                                        ))
-                                    }
-                                </View>
-                                <View style={styles.courseTitle}>
-                                    <Text style={styles.courseTitleText}>新手入门</Text>
-                                </View>
-                                <ScrollView style={styles.courseNewList} horizontal={true}>
-                                    {
-                                        this.state.onePageData.new.map((item, index) => (
-                                            <View
-                                                style={[styles.courseNewItem, index == this.state.onePageData.new.length - 1 ? {marginRight: 10} : {}]}
-                                                id={item.id} key={index}>
-                                                <ImageBackground source={require('../../img/item.jpg')}
-                                                                 style={styles.courseNewItemBg}/>
+                                        this.state.TABS.map((element, i) => (
+                                            <View key={i} style={[styles.classifyTabs, i==0?{marginTop:0}:{}]}>
+                                                <View style={styles.classifyTabText}>
+                                                    <Text style={styles.classifyTabTextInner}>
+                                                        {
+                                                            i == 0 ? '难度' : i == 1 ? '部位' : '器械'
+                                                        }
+                                                    </Text>
+                                                </View>
+
+                                                <ScrollView horizontal={true} style={styles.classifyTabWrapper}>
+                                                    {
+                                                        element.map((item, index) => (
+                                                                <TouchableWithoutFeedback key={index} onPress={this.handleClickTag.bind(this, i, index)}>
+                                                                    <LinearGradient
+                                                                    colors={item.selected ? ['#6fadff', '#8174ff'] : ['rgba(0,0,0,0)', 'rgba(0,0,0,0)']}
+                                                                    start={{x: 0, y: 0.5}} end={{x: 1, y: 0.5}}
+                                                                    style={[styles.classifyTabItem, item.selected ? { backgroundColor: 'transparent'} : {}]}
+                                                                    >
+                                                                        <Text style={[styles.classifyTabItemText, item.selected ? { color: '#fff' } : {}]}>{item.name}</Text>
+                                                                    </LinearGradient>
+                                                                </TouchableWithoutFeedback>
+                                                            )
+                                                        )
+                                                    }
+                                                </ScrollView>
                                             </View>
                                         ))
                                     }
-                                </ScrollView>
+                                </View>
+                                {
+                                    this.state.dataList.length > 0  ? (
+                                        <ScrollView style={[styles.courseList, {paddingTop: 0}]}>
+                                            {
+                                                this.state.dataList.map((item, index) => (
+                                                    <CourseItem navigate={navigate} data={item} key={index}/>
+                                                ))
+                                            }
+                                        </ScrollView>
+                                    ) : (
+                                        <Text>
+                                            没有课程
+                                        </Text>
+                                    )
+                                }
+                            </View>
+                        ) : (
+                            <ScrollView style={styles.courseList}>
+                                {
+                                    this.state.dataList.map((item, index) => (
+                                        <CourseItem data={item} key={index}/>
+                                    ))
+                                }
                             </ScrollView>
                         )
-                        :
-                        this.state.curItem === 1 ?
-                            (
-                                <View style={{flex:1}}>
-                                    <View style={styles.classifyTabsWrapper}>
-                                        {
-                                            this.state.TABS.map((element, i) => (
-                                                <View key={i} style={[styles.classifyTabs, i==0?{marginTop:0}:{}]}>
-                                                    <View style={styles.classifyTabText}>
-                                                        <Text style={styles.classifyTabTextInner}>
-                                                            {
-                                                                i == 0 ? '难度' : i == 1 ? '部位' : '器械'
-                                                            }
-                                                        </Text>
-                                                    </View>
-
-                                                    <ScrollView horizontal={true} style={styles.classifyTabWrapper}>
-                                                        {
-                                                            element.map((item, index) => (
-                                                                    <TouchableWithoutFeedback key={index} onPress={this.handleClickTag.bind(this, i, index)}>
-                                                                        {
-                                                                            item.selected ? (
-                                                                            <LinearGradient
-                                                                            colors={['#6fadff', '#8174ff']}
-                                                                            start={{x: 0, y: 0.5}} end={{x: 1, y: 0.5}}
-                                                                            style={[styles.classifyTabItem, { backgroundColor: 'transparent'}]}
-                                                                            >
-                                                                                <Text style={[styles.classifyTabItemText, { color: '#fff' }]}>{item.name}</Text>
-                                                                            </LinearGradient>
-                                                                            ) : (
-                                                                            <View key={index} style={styles.classifyTabItem}>
-                                                                                <Text style={styles.classifyTabItemText}>{item.name}</Text>
-                                                                            </View>
-                                                                            )
-                                                                        }
-                                                                    </TouchableWithoutFeedback>
-                                                                )
-                                                            )
-                                                        }
-                                                    </ScrollView>
-                                                </View>
-                                            ))
-                                        }
-                                    </View>
-                                    {
-                                        this.state.dataList.length > 0  ? (
-                                            <ScrollView style={[styles.courseList, {paddingTop: 0}]}>
-                                                {
-                                                    this.state.dataList.map((item, index) => (
-                                                        <CourseItem navigate={navigate} data={item} key={index}/>
-                                                    ))
-                                                }
-                                            </ScrollView>
-                                        ) : (
-                                            <Text>
-                                                没有课程
-                                            </Text>
-                                        )
-                                    }
-                                </View>
-                            )
-                            :
-                            (
-                                <ScrollView style={styles.courseList}>
-                                    {
-                                        this.state.dataList.map((item, index) => (
-                                            <CourseItem data={item} key={index}/>
-                                        ))
-                                    }
-                                </ScrollView>
-                            )
+                    )
                 }
+                <Loading ref={r=>{this.Loading = r}} hudHidden = {true} hudText = {''} />
             </View>
         );
     }
@@ -451,6 +456,18 @@ const styles = {
     classifyTabItemText: {
         fontSize: 16,
         color: 'rgba(0,0,0,.3)',
+    },
+    shade: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,.3)',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    shadeText: {
+        color: '#fff',
     }
 
 }
