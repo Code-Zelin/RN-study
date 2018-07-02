@@ -4,13 +4,19 @@ import util from '../../../util/util';
 const { formattingSecond } = util;
 
 export default class courseItem extends Component {
-
     render() {
-        const { data: propsData, navigate } = this.props;
+        const { data: propsData, navigate, baseAddress, sasToken } = this.props;
         return (
             <TouchableWithoutFeedback onPress={() => navigate('CourseDetail', { id: propsData.id })} style={{ flex: 1 }}>
                 <View style={styles.courseItem}>
-                    <ImageBackground source={require('../../../img/item.jpg')} style={styles.courseItemBg}>
+                    <ImageBackground source={{
+                        uri: `${baseAddress}/${propsData.coverUrl}?${sasToken}`,
+                        method: 'POST',
+                        headers: {
+                            Pragma: 'no-cache'
+                        },
+                        body: 'Your Body goes here'
+                    }} style={styles.courseItemBg}>
                         <View style={styles.courseItemShade}>
                             <View>
                                 <Text style={styles.courseItemText}
@@ -26,6 +32,7 @@ export default class courseItem extends Component {
         );
     }
 }
+
 
 const styles = {
     courseItem: {

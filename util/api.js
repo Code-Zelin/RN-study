@@ -55,10 +55,12 @@ const DELETE = (url, data, callBack) => {
 }
 
 const api = {
-    getStatic() {
-        GET('storage/wechat/accesstoken', (res)=> {
-            console.log(res)
-            window.localStorage.setItem('static', JSON.stringify(res));
+    getStatic(dispath) {
+        return GET('storage/wechat/accesstoken', (res)=> {
+            dispath({
+                type: "CHANGE_STATIC",
+                data: res
+            })
         })
     },
     getCourses(data, callBack) {
@@ -68,8 +70,7 @@ const api = {
         GET('courses/series', callBack)
     },
     FavoritesApi(method, callBack, data = {}) {
-        return ajax('favorites', method, data, callBack)
-
+        ajax('favorites', method, data, callBack)
     },
     getCategory(data, callBack) {
         GET('courses/category', callBack, data)

@@ -9,9 +9,12 @@
     "bundle-android": "react-native bundle --platform android --dev false --entry-file index.android.js --bundle-output android/app/src/main/assets/index.android.bundle --sourcemap-output android/app/src/main/assets/index.android.map --assets-dest android/app/src/main/res/"
   },
   "dependencies": {
+    "prop-types": "^15.6.2",
     "react": "16.3.1",
     "react-native": "^0.55.4",
     "react-native-linear-gradient": "^2.4.0",
+    "react-native-smart-barcode": "^1.0.6",
+    "react-native-smart-timer-enhance": "^1.0.3",
     "react-navigation": "^2.5.2",
     "react-redux": "^5.0.7",
     "redux": "^4.0.0",

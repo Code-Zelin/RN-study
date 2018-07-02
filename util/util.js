@@ -9,8 +9,8 @@ const formattingNum = (num) => {
 }
 
 const getStatic = () => {
-    let staticData = window.localStorage.getItem('static');
-    return JSON.parse(staticData);
+    // let staticData = window.localStorage.getItem('static');
+    // return JSON.parse(staticData);
 }
 
 export default {

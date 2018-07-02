@@ -1,6 +1,7 @@
 package com.rnstudy;
 
 import com.facebook.react.ReactActivity;
+import com.reactnativecomponent.barcode.RCTCapturePackage;    //import RCTCapturePackage
 
 public class MainActivity extends ReactActivity {
 

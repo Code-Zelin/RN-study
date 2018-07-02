@@ -8,10 +8,12 @@ import {
 } from 'react-native';
 import api from '../../util/api';
 import util  from '../../util/util';
+import { connect } from "react-redux";
+
 const { formattingSecond, getStatic } = util;
 
 
-export default class courseDetail extends Component {
+class courseDetail extends Component {
     static navigationOptions = {
         title: '课程详情',
     };
@@ -47,12 +49,17 @@ export default class courseDetail extends Component {
         })
     }
 
+    shouldComponentUpdate(prevProps, prevState) {
+        console.log(prevProps === this.props, prevState===this.state);
+        return true;
+    }
+
     render() {
         return (
             <ScrollView style={{ flex: 1 }}>
                 <ImageBackground
                     source={{
-                        uri: `${this.state.static.baseAddress}/${this.state.ajaxData.coverUrl}?${this.state.static.sasToken}`,
+                        uri: `${this.props.data.baseAddress}/${this.state.ajaxData.coverUrl}?${this.props.data.sasToken}`,
                         method: 'POST',
                         headers: {
                             Pragma: 'no-cache'
@@ -124,6 +131,8 @@ export default class courseDetail extends Component {
         );
     }
 }
+
+export default connect((store)=>({data: store.GetStaticReducer}))(courseDetail);
 
 const styles = {
     header: {
