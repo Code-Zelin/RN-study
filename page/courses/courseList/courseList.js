@@ -146,7 +146,7 @@ class courseList extends Component {
                                 <View
                                     style={[styles.courseNewItem, (index === this.state.onePageData.new.length - 1) ? {marginRight: 10} : {}]}
                                     id={item.id} key={index}>
-                                    <ImageBackground source={require('../../../img/item.jpg')}
+                                    <ImageBackground source={require('../../../img/courseBg.jpg')}
                                                      style={styles.courseNewItemBg}/>
                                 </View>
                             ))

@@ -109,7 +109,7 @@ class courseDetail extends Component {
                                 {
                                     this.state.ajaxData.actions.map((item, index) => (
                                         <View style={styles.actionItem} key={index}>
-                                            <ImageBackground source={require('../../img/item.jpg')} style={styles.actionItemImg} />
+                                            <ImageBackground source={require('../../img/courseBg.jpg')} style={styles.actionItemImg} />
                                             <View style={styles.actionItemRight}>
                                                 <View style={styles.actionItemRightInner}>
                                                     <Text style={styles.actionItemText}>{item.name}</Text>

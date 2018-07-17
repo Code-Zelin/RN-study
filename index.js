@@ -5,6 +5,7 @@ import App from './App';
 import CourseList from './page/courses/courseList/courseList';
 import CourseStar from './page/courses/courseList/courseStar';
 import CourseFilter from './page/courses/courseList/courseFilter';
+import Fs from "./page/my/Fs";
 
 import CourseDetail from './page/courses/courseDetail';
 import Courses from './page/courses/courses';
@@ -103,11 +104,26 @@ const MainNav = createStackNavigator(
     }
 )
 
+const MyNav = createStackNavigator(
+    {
+        Fs: {
+            screen: Fs,
+            navigationOptions: ()=>({
+                title: `My——文件`,
+                headerBackTitle: null
+            })
+        },
+    }
+)
+
+
+
 const TabNavigator = createBottomTabNavigator(
     {
         Main: MainNav,
         Courses: CourseNav,
-        Control: ControlNav
+        Control: ControlNav,
+        My: MyNav
     }
 )
 
